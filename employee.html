@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>استعلام عن موظف / Employee Inquiry</title>
+  <style>
+    :root{
+      --primary:#004aad;
+      --accent:#006aff;
+      --card-border:6px solid var(--primary);
+      --bg:#f4f6fa;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: "Tajawal", "Arial", sans-serif;
+      background:var(--bg);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:20px;
+    }
+
+    header{ text-align:center; margin-top:18px; }
+    header h1{ color:var(--primary); font-size:30px; margin:6px 0; }
+    header p{ color:#333; margin:0; opacity:.9 }
+
+    .search-area{
+      width:100%;
+      max-width:760px;
+      margin:18px 0;
+      display:flex;
+      justify-content:center;
+    }
+    .search-box{
+      background:#fff;
+      width:100%;
+      display:flex;
+      gap:10px;
+      padding:14px;
+      border-radius:12px;
+      box-shadow:0 8px 24px rgba(0,0,0,.08);
+      align-items:center;
+    }
+    .search-box input{
+      flex:1;
+      padding:12px 14px;
+      font-size:16px;
+      border:2px solid #0d335f;
+      border-radius:8px;
+      outline:none;
+      direction:ltr;
+    }
+    .search-box button{
+      background:var(--primary);
+      color:#fff;
+      padding:12px 18px;
+      border-radius:8px;
+      border:none;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .search-box button:active{ transform:translateY(1px) }
+
+    /* card */
+    .card{
+      width:100%;
+      max-width:760px;
+      background:#fff;
+      border-radius:12px;
+      margin-top:18px;
+      padding:18px;
+      box-shadow:0 10px 30px rgba(0,0,0,.08);
+      border-top: 6px solid var(--primary);
+      display:none;
+    }
+    .card .top{
+      display:flex;
+      gap:16px;
+      align-items:center;
+      padding-bottom:6px;
+      border-bottom:1px solid #eee;
+    }
+    .photo{
+      width:120px; height:120px;
+      border-radius:8px;
+      border:3px solid var(--primary);
+      object-fit:cover;
+      background:#f6f6f6;
+    }
+    .top .name{
+      font-size:22px;
+      font-weight:800;
+      color:#111;
+    }
+
+    .info-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px 6px;
+      margin-top:16px;
+      align-items:center;
+    }
+    .label{ color:#333; font-weight:700; text-align:right; }
+    .value{ color:var(--primary); font-weight:600; text-align:left; }
+
+    /* responsive */
+    @media (max-width:520px){
+      .top{ flex-direction:column; align-items:center }
+      .info-grid{ grid-template-columns: 1fr; text-align:center }
+      .label{ text-align:center }
+      .value{ text-align:center }
+      .photo{ width:110px; height:110px }
+    }
+
+    /* print */
+    @media print {
+      .search-area, .print-button { display:none }
+      body{ background:#fff }
+    }
+
+    .controls{ margin-top:12px; display:flex; gap:10px; justify-content:flex-end }
+    .print-button{
+      padding:8px 12px; background:#0a9b59;color:#fff;border:none;border-radius:8px; cursor:pointer;
+    }
+    .error{ color:#b40d0d; margin-top:10px; display:none }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>استعلام عن موظف</h1>
+    <p>Employee Inquiry — أدخل رقم الموظف ثم اضغط بحث</p>
+  </header>
+
+  <div class="search-area">
+    <div class="search-box">
+      <button id="btnSearch" type="button">بحث</button>
+      <input id="empId" placeholder="أدخل رقم الموظف (مثال: 5025)" inputmode="numeric" />
+    </div>
+  </div>
+
+  <div id="error" class="error">الموظف غير موجود</div>
+
+  <div id="card" class="card" aria-hidden="true">
+    <div class="top">
+      <img id="photo" class="photo" src="sakibul.jpg" alt="Employee Photo">
+      <div>
+        <div class="name" id="arabicName">محمد سكيبُل</div>
+        <div style="margin-top:6px;color:#666;font-size:14px">MD SAKIBUL</div>
+      </div>
+    </div>
+
+    <div class="info-grid" style="direction:rtl;">
+      <div class="label">: رقم الموظف</div><div class="value" id="val_emp">5025</div>
+      <div class="label">: اسم الموظف</div><div class="value" id="val_name">محمد سكيبُل</div>
+      <div class="label">: الوظيفة بالسوق</div><div class="value" id="val_market">1</div>
+      <div class="label">: الوظيفة بالإقامة</div><div class="value" id="val_res_job">عامل تحميل وتنزيل</div>
+      <div class="label">: رقم الإقامة</div><div class="value" id="val_resid">2618686550</div>
+      <div class="label">: الجنسية</div><div class="value" id="val_nat">122</div>
+      <div class="label">: الجوال</div><div class="value" id="val_mobile">0552162192</div>
+      <div class="label">: تاريخ الميلاد</div><div class="value" id="val_dob">-</div>
+    </div>
+
+    <div class="controls">
+      <button class="print-button" onclick="window.print()">طباعة / حفظ PDF</button>
+    </div>
+  </div>
+
+  <script>
+    // in-page "database" — change values here if needed
+    const db = {
+      "5025": {
+        arabicName: "محمد سكيبُل",
+        latinName: "MD SAKIBUL",
+        market: "1",
+        resJob: "عامل تحميل وتنزيل",
+        resid: "2618686550",
+        nat: "122",
+        mobile: "0552162192",
+        dob: "-"
+        // photo file should be sakibul.jpg in the same folder
+      },
+      // Add more records later if you want (example:)
+      // "1613": { arabicName:"منير", latinName:"Munir", ... }
+    };
+
+    const empIdInput = document.getElementById('empId');
+    const btn = document.getElementById('btnSearch');
+    const card = document.getElementById('card');
+    const err = document.getElementById('error');
+
+    function showRecord(id){
+      const rec = db[id];
+      if(!rec){
+        card.style.display = 'none';
+        err.style.display = 'block';
+        return;
+      }
+      err.style.display = 'none';
+      // set values
+      document.getElementById('arabicName').textContent = rec.arabicName || rec.latinName;
+      document.getElementById('val_emp').textContent = id;
+      document.getElementById('val_name').textContent = rec.arabicName + " / " + rec.latinName;
+      document.getElementById('val_market').textContent = rec.market || '-';
+      document.getElementById('val_res_job').textContent = rec.resJob || '-';
+      document.getElementById('val_resid').textContent = rec.resid || '-';
+      document.getElementById('val_nat').textContent = rec.nat || '-';
+      document.getElementById('val_mobile').textContent = rec.mobile || '-';
+      document.getElementById('val_dob').textContent = rec.dob || '-';
+
+      // photo: keep filename sakibul.jpg for 5025. If you add more records, add logic for other images.
+      const photoEl = document.getElementById('photo');
+      if(id === '5025') photoEl.src = 'sakibul.jpg';
+      // else if (id === '1613') photoEl.src = 'munir.jpg';
+
+      card.style.display = 'block';
+      card.setAttribute('aria-hidden','false');
+      // scroll to card on mobile
+      setTimeout(()=>card.scrollIntoView({behavior:'smooth', block:'center'}),100);
+    }
+
+    // handle button and enter
+    btn.addEventListener('click', () => showRecord(empIdInput.value.trim()));
+    empIdInput.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter') showRecord(empIdInput.value.trim());
+    });
+
+    // Optional: if you want the card visible by default for 5025:
+    // showRecord('5025');
+  </script>
+</body>
+</html>
